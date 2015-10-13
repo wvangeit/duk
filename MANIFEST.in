@@ -1,0 +1,2 @@
+include versioneer.py
+include duk/_version.py

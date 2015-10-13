@@ -5,9 +5,12 @@ try:
 except ImportError:
     from distutils.core import setup, Extension  # pylint: disable=E0611,F0401
 
+import versioneer
+
 setup(
     name='duk',
-    version=0.2,
+    version=versioneer.get_version(),
+    cmdclass=versioneer.get_cmdclass(),
     install_requires=[],
     packages=['duk'],
     author='Werner Van Geit',
