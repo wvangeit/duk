@@ -1,1 +1,4 @@
 *.pyc
+/build/
+/dist/
+/duk.egg-info/
