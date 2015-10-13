@@ -12,7 +12,7 @@ setup(
     packages=['duk'],
     author='Werner Van Geit',
     author_email='werner.vangeit@gmail.com',
-    description='Duk',
+    description='Python wrapper around the du -ks command',
     long_description="",
     entry_points={'console_scripts': ['duk=duk.duk:main'], },
     license="LGPLv3",
