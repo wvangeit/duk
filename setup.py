@@ -7,13 +7,14 @@ except ImportError:
 
 setup(
     name='duk',
-    version=0.1,
+    version=0.2,
     install_requires=[],
     packages=['duk'],
     author='Werner Van Geit',
     author_email='werner.vangeit@gmail.com',
     description='Duk',
     long_description="",
+    entry_points={'console_scripts': ['duk=duk.duk:main'], },
     license="LGPLv3",
     keywords=(),
     url='https://github.com/wvangeit/duk',
