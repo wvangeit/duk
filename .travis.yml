@@ -1,3 +1,9 @@
+language: python                                                                 
+python:                                                                          
+  - '3.4'
+  - '3.5'    
+install: pip install pip --upgrade
+script : pip install . --upgrade
 deploy:
   provider: pypi
   user: wvangeit
