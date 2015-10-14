@@ -16,7 +16,9 @@ setup(
     author='Werner Van Geit',
     author_email='werner.vangeit@gmail.com',
     description='Python wrapper around the du -ks command',
-    long_description="",
+    long_description="Duk is a commandline utility that wraps around the "
+    "linux 'du -ks' command. It will show you a histogram of the "
+    "disk usage in a directory",
     entry_points={'console_scripts': ['duk=duk.duk:main'], },
     license="LGPLv3",
     keywords=(),
