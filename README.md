@@ -33,3 +33,9 @@ The easiest way to install duk is to use [pip](https://pip.pypa.io)
 ```bash                                                                          
 pip install duk                                                                 
 ```          
+
+In case you're not in a python virtualenv, or don't have administrator access on your computer, you could use:
+
+```bash                                                                          
+pip install --user duk                                                                 
+```    
