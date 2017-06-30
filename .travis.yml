@@ -5,7 +5,7 @@ python:
   - '3.5'
   - '3.6'    
 install: pip install pip --upgrade
-script : pip install . --upgrade
+script : make test
 deploy:
   provider: pypi
   user: wvangeit

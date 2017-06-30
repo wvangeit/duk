@@ -4,10 +4,10 @@ clean:
 	rm -rf dist
 	rm -rf build
 	rm -rf duk.egg-info
-test:
-	pip install .
+test: install
 	pip install nose --upgrade
 	nosetests
+	duk
 push: clean install
 	git push
 	git push --tags
