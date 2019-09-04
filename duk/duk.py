@@ -68,10 +68,13 @@ def calculate_file_sizes(files_list, args):
 
     for file_number, filename in enumerate(files_list):
         full_filename = os.path.join(args.dirname, filename)
-        duks_proc = subprocess.Popen(
-            ["du", "-kxs", full_filename],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE)
+        du_options = ["-kxs"]
+        if args.inodes:
+            du_options += ["--inodes"]
+        du_command = ["du"] + du_options + [full_filename]
+        duks_proc = subprocess.Popen(du_command,
+                                     stdout=subprocess.PIPE,
+                                     stderr=subprocess.PIPE)
         stdout, stderr = duks_proc.communicate()
         error = stderr.decode("utf-8").split("\n")[0]
         if not args.noF:
@@ -94,11 +97,17 @@ def calculate_file_sizes(files_list, args):
     return file_sizes, errors
 
 
-def print_header(dirname, fmt):
+def print_header(dirname, fmt, args):
     """Print header string"""
 
     print("\n\nStatistics of directory \"%s\" :\n" % dirname)
-    print(fmt.format("in kByte", "in %", "histogram", "Name"))
+
+    if args.inodes:
+        col0_name = "inodes"
+    else:
+        col0_name = "in kByte"
+
+    print(fmt.format(col0_name, "in %", "histogram", "name"))
 
 
 def print_tail(total_size, permission_error, args):
@@ -134,8 +143,10 @@ def parse_arguments():
                         help='Directory name')
     parser.add_argument('--nogrouping', action='store_true')
     parser.add_argument('--noprogress', action='store_true')
+    parser.add_argument('--inodes', action='store_true', default=False)
     parser.add_argument('--noF', action='store_true')
     return parser.parse_args()
+    parser.add_argument('--noprogress', action='store_true')
 
 
 def main():
@@ -152,7 +163,7 @@ def main():
 
     total_size = sum(file_sizes.values())
 
-    print_header(args.dirname, fmt)
+    print_header(args.dirname, fmt, args)
     print_error_files(errors, max_marks)
     print_normal_files(file_sizes, max_marks, total_size, fmt, args)
     print_tail(total_size, permission_error, args)
