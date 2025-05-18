@@ -10,8 +10,6 @@ import argparse
 import sys
 import warnings
 
-# pylint: disable=E1103
-
 
 def _print_error_files(errors, max_marks):
     """Print the lines with files that generated errors"""
@@ -153,9 +151,14 @@ def main():
 
     args = parse_arguments()
     max_marks = 20
-    fmt = "{0:<14} {1:<6} {2:<%d} {3:<10}" % (max_marks)
+    fmt = f"{{0:<14}} {{1:<6}} {{2:<{max_marks}}} {{3:<10}}"
 
-    files_list = os.listdir(args.dirname)
+    try:
+        files_list = os.listdir(args.dirname)
+    except PermissionError:
+        print(f"Permission denied: Unable to access directory '{args.dirname}'", file=sys.stderr)
+    except Exception as e:
+        print(f"Error accessing directory '{args.dirname}': {e}", file=sys.stderr)
     permission_error = False
 
     file_sizes, errors = calculate_file_sizes(files_list, args)
