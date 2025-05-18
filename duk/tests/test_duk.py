@@ -4,6 +4,7 @@ import types
 import pytest
 from duk import duk
 import unittest.mock as mock
+import subprocess
 
 # Import the function to test
 
@@ -175,3 +176,19 @@ def test_print_progress(capsys):
     duk.print_progress(0.5, 10)
     captured = capsys.readouterr()
     assert ">" in captured.out or "-" in captured.out
+
+def test_run_shell():
+    # Functional test: run the script in a shell and print output
+    print("\n--- Functional test: running script in shell ---")
+    result = subprocess.run(
+        ["duk", "."],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True
+    )
+    print("STDOUT:\n", result.stdout)
+    print("STDERR:\n", result.stderr)
+    assert result.returncode == 0, "Script failed with return code: {}".format(result.returncode)
+    assert "Total directory size" in result.stdout, "Expected output not found in STDOUT"
+    
+ 
