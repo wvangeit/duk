@@ -13,7 +13,7 @@ import warnings
 # pylint: disable=E1103
 
 
-def print_error_files(errors, max_marks):
+def _print_error_files(errors, max_marks):
     """Print the lines with files that generated errors"""
 
     fmt_error = "{0:<%d} {1:<10}" % (22 + max_marks)
@@ -51,13 +51,9 @@ def print_normal_files(file_sizes, max_marks, total_size, fmt, args):
             file_size = "{:,}".format(file_size)
         print(
             fmt.format(
-                file_size,
-                "%02.2f" %
-                percentage,
-                "".join(
-                    ["#"] *
-                    nmarks),
-                filename))
+                file_size, "%02.2f" % percentage, "".join(["#"] * nmarks), filename
+            )
+        )
 
 
 def calculate_file_sizes(files_list, args):
@@ -72,9 +68,9 @@ def calculate_file_sizes(files_list, args):
         if args.inodes:
             du_options += ["--inodes"]
         du_command = ["du"] + du_options + [full_filename]
-        duks_proc = subprocess.Popen(du_command,
-                                     stdout=subprocess.PIPE,
-                                     stderr=subprocess.PIPE)
+        duks_proc = subprocess.Popen(
+            du_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+        )
         stdout, stderr = duks_proc.communicate()
         error = stderr.decode("utf-8").split("\n")[0]
         if not args.noF:
@@ -91,8 +87,7 @@ def calculate_file_sizes(files_list, args):
         if not args.noprogress:
             print_progress((file_number + 1) / len(files_list), 80)
 
-    file_sizes = collections.OrderedDict(sorted(
-        file_sizes.items(), key=lambda x: x[1]))
+    file_sizes = collections.OrderedDict(sorted(file_sizes.items(), key=lambda x: x[1]))
 
     return file_sizes, errors
 
@@ -100,7 +95,7 @@ def calculate_file_sizes(files_list, args):
 def print_header(dirname, fmt, args):
     """Print header string"""
 
-    print("\n\nStatistics of directory \"%s\" :\n" % dirname)
+    print('\n\nStatistics of directory "%s" :\n' % dirname)
 
     if args.inodes:
         col0_name = "inodes"
@@ -118,16 +113,17 @@ def print_tail(total_size, permission_error, args):
     print("\nTotal directory size: %s kByte\n" % total_size)
 
     if permission_error:
-        print("The Ducky has no permission to access certain "
-              "subdirectories !\n", file=sys.stderr)
+        print(
+            "The Ducky has no permission to access certain " "subdirectories !\n",
+            file=sys.stderr,
+        )
 
 
 def print_progress(progress, total_bar_size):
     """Print a progress bar"""
 
     bar_size = int(round(total_bar_size * progress))
-    pbar = "\r{0}".format(
-        '>' * bar_size + '-' * (total_bar_size - bar_size))
+    pbar = "\r{0}".format(">" * bar_size + "-" * (total_bar_size - bar_size))
     sys.stdout.write(pbar)
     sys.stdout.flush()
 
@@ -135,18 +131,21 @@ def print_progress(progress, total_bar_size):
 def parse_arguments():
     """Parse command line arguments"""
 
-    parser = argparse.ArgumentParser(description='Show disk usage statistics')
-    parser.add_argument('dirname', metavar='dirname',
-                        type=str,
-                        nargs='?',
-                        default='.',
-                        help='Directory name')
-    parser.add_argument('--nogrouping', action='store_true')
-    parser.add_argument('--noprogress', action='store_true')
-    parser.add_argument('--inodes', action='store_true', default=False)
-    parser.add_argument('--noF', action='store_true')
+    parser = argparse.ArgumentParser(description="Show disk usage statistics")
+    parser.add_argument(
+        "dirname",
+        metavar="dirname",
+        type=str,
+        nargs="?",
+        default=".",
+        help="Directory name",
+    )
+    parser.add_argument("--nogrouping", action="store_true")
+    parser.add_argument("--noprogress", action="store_true")
+    parser.add_argument("--inodes", action="store_true", default=False)
+    parser.add_argument("--noF", action="store_true")
     return parser.parse_args()
-    parser.add_argument('--noprogress', action='store_true')
+    parser.add_argument("--noprogress", action="store_true")
 
 
 def main():
@@ -164,7 +163,7 @@ def main():
     total_size = sum(file_sizes.values())
 
     print_header(args.dirname, fmt, args)
-    print_error_files(errors, max_marks)
+    _print_error_files(errors, max_marks)
     print_normal_files(file_sizes, max_marks, total_size, fmt, args)
     print_tail(total_size, permission_error, args)
 
@@ -177,8 +176,6 @@ if __name__ == "__main__":
         warnings.filterwarnings("ignore")
         sys.exit(1)
     except Exception as e:
-        print(
-            'Sorry, the Duck was eaten by the Python !\nReason:',
-            sys.exc_info()[0])
+        print("Sorry, the Duck was eaten by the Python !\nReason:", sys.exc_info()[0])
         if isinstance(e, SystemExit):
             raise  # take the exit

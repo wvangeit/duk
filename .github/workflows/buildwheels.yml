@@ -1,0 +1,134 @@
+name: "buildwheels"
+
+on:
+    push:
+    schedule:
+      - cron: "5 0 * * 0"
+
+jobs:
+    tag:
+        name: Tag new version
+        runs-on: ubuntu-latest
+        permissions:
+            contents: write
+        outputs:
+          new_tag: ${{ steps.tag_version.outputs.new_tag }}
+          changelog: ${{ steps.tag_version.outputs.changelog }}
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+            - name: Bump version and push tag
+              id: tag_version
+              if: github.ref == 'refs/heads/master'
+              uses: anothrNick/github-tag-action@1.64.0
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  WITH_V: false
+                  DEFAULT_BUMP: patch
+
+    wheels:
+        name: Build wheel on ${{ matrix.python }} ${{ matrix.arch }}
+        runs-on: ${{ matrix.github-runner }}
+        strategy:
+            fail-fast: true
+            matrix:
+                python: ['3.13']
+                arch: ['arm64']
+                include:
+                    - arch: arm64
+                      github-runner: 'ubuntu-24.04-arm'
+                      wheel-platform: 'aarch64'
+            
+        permissions:
+            contents: write
+        needs: tag
+        steps:
+            - uses: actions/checkout@v4
+              if: github.ref != 'refs/heads/master'
+              with:
+                  fetch-depth: 0
+            - uses: actions/checkout@v4
+              if: github.ref == 'refs/heads/master'
+              with:
+                  fetch-depth: 0
+                  ref: ${{ needs.tag.outputs.new_tag }}
+            - name: Set up Python
+              uses: actions/setup-python@v5
+              with:
+                  python-version: ${{ matrix.python }}
+            - name: Build wheel
+              run: pip wheel -w wheelhouse .
+            - name: Run tests
+              run: |
+                make test
+            - name: Upload wheels
+              uses: actions/upload-artifact@v4
+              with:
+                name: wheels-${{ matrix.os }}-${{ matrix.wheel-platform }}
+                path: ./wheelhouse/*.whl
+
+    release:
+        name: Create new github release
+        runs-on: ubuntu-latest
+        permissions:
+            contents: write
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        needs: 
+          - tag
+          - wheels
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+                  ref: ${{ needs.tag.outputs.new_tag }}
+            - name: Create a GitHub release
+              uses: ncipollo/release-action@v1
+              with:
+                tag: ${{ needs.tag.outputs.new_tag }}
+                generateReleaseNotes: true
+                artifacts: wheels-*
+
+    test-pypi:
+        name: Publish wheels on Test PyPI
+        runs-on: ubuntu-latest
+        needs:
+            - release
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        environment:
+            name: testpypi
+            url: https://test.pypi.org/p/duk
+        permissions:
+            id-token: write
+        steps:
+            - name: Download all artifacts
+              uses: actions/download-artifact@v4
+              with:
+                  pattern: wheels-*
+                  path: dist
+                  merge-multiple: true
+            - name: Publish package to PyPI
+              uses: pypa/gh-action-pypi-publish@release/v1
+              with:
+                  repository-url: https://test.pypi.org/legacy/
+    
+    pypi:
+        name: Publish wheels on PyPI
+        runs-on: ubuntu-latest
+        needs:
+            - test-pypi
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        environment:
+            name: pypi
+            url: https://pypi.org/p/duk
+        permissions:
+            id-token: write
+        steps:
+            - name: Download all artifacts
+              uses: actions/download-artifact@v4
+              with:
+                  pattern: wheels-*
+                  path: dist
+                  merge-multiple: true
+            - name: Publish package to PyPI
+              uses: pypa/gh-action-pypi-publish@release/v1
