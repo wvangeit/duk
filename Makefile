@@ -11,7 +11,7 @@ install_dist: dist
 	uv pip install --force-reinstall dist/duk-*.whl
 test: install_dist
 	uv pip install pytest
-	pytest
+	uv run pytest
 push: clean test
 	git push
 	git push --tags
