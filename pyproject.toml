@@ -1,0 +1,29 @@
+[project] 
+name = "duk"
+description = "Python wrapper around the du -ks command. It will show you a histogram of the disk usage in a directory"
+
+license = { file = "LICENSE.txt" }
+authors = [
+    {name="Werner Van Geit"}
+]
+readme = {file = "README.md", content-type = "text/markdown"}
+dependencies = []
+requires-python = ">=3.8"
+dynamic = ["version"]
+classifiers = [
+    "License :: OSI Approved :: GNU Lesser General Public License v3 or later (LGPLv3+)",
+    "Topic :: Utilities"
+]
+
+[project.scripts]
+duk = "duk.duk:main"
+
+[project.urls]
+homepage = "https://github.com/wvangeit/duk"
+
+[build-system]
+requires = ["setuptools>=42", "wheel", "setuptools_scm"]
+
+[tool.setuptools_scm]
+version_file = "duk/_version.py"
+local_scheme = "no-local-version"
