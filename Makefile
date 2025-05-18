@@ -10,6 +10,7 @@ wheel: clean
 install_wheel: wheel
 	pip install --force-reinstall wheelhouse/duk-*.whl
 test: install_wheel
+	pip install pytest
 	pytest
 push: clean test
 	git push
