@@ -58,7 +58,7 @@ jobs:
               with:
                   python-version: ${{ matrix.python }}
             - name: Build wheel
-              run: pip wheel .
+              run: pip wheel -w wheelhouse .
             - name: Run tests
               run: |
                 pip install pytest
