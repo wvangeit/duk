@@ -88,7 +88,7 @@ jobs:
               with:
                 tag: ${{ needs.tag.outputs.new_tag }}
                 generateReleaseNotes: true
-                artifacts: dist-*
+                artifacts: "dist-*"
 
     test-pypi:
         name: Publish dist on Test PyPI
