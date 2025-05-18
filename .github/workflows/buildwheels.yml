@@ -79,6 +79,10 @@ jobs:
           - tag
           - dist
         steps:
+            - name: Download all artifacts
+              uses: actions/download-artifact@v4
+              with:
+                  pattern: dist-*
             - uses: actions/checkout@v4
               with:
                   fetch-depth: 0
@@ -88,7 +92,7 @@ jobs:
               with:
                 tag: ${{ needs.tag.outputs.new_tag }}
                 generateReleaseNotes: true
-                artifacts: "dist-*"
+                artifacts: "dist/*.whl,dist/*.tar.gz"
 
     test-pypi:
         name: Publish dist on Test PyPI
