@@ -13,7 +13,7 @@ import warnings
 # pylint: disable=E1103
 
 
-def print_error_files(errors, max_marks):
+def _print_error_files(errors, max_marks):
     """Print the lines with files that generated errors"""
 
     fmt_error = "{0:<%d} {1:<10}" % (22 + max_marks)
@@ -163,7 +163,7 @@ def main():
     total_size = sum(file_sizes.values())
 
     print_header(args.dirname, fmt, args)
-    print_error_files(errors, max_marks)
+    _print_error_files(errors, max_marks)
     print_normal_files(file_sizes, max_marks, total_size, fmt, args)
     print_tail(total_size, permission_error, args)
 
