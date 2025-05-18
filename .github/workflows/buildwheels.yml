@@ -33,7 +33,7 @@ jobs:
         strategy:
             fail-fast: true
             matrix:
-                python: ['3.12']
+                python: ['3.13']
                 arch: ['arm64']
                 include:
                     - arch: arm64
