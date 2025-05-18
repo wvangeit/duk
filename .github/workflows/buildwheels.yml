@@ -36,9 +36,6 @@ jobs:
                 python: ['3.12']
                 arch: ['arm64']
                 include:
-                    - arch: x86_64
-                      github-runner: 'ubuntu-24.04'
-                      wheel-platform: 'x86_64'
                     - arch: arm64
                       github-runner: 'ubuntu-24.04-arm'
                       wheel-platform: 'aarch64'
