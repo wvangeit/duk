@@ -50,7 +50,7 @@ def print_normal_files(file_sizes, max_marks, total_size, fmt, args):
         print(
             fmt.format(
                 file_size,
-                f"{percentage:<02.2f}",
+                f"{percentage:02.2f}",
                 "".join(["#"] * nmarks),
                 filename,
             )
