@@ -155,7 +155,7 @@ def main():
 
     args = parse_arguments()
     max_marks = 20
-    fmt = f"{{0:<14}} {{1:<6}} {{2:<{max_marks}}} {{3}}"
+    fmt = f"{{0:<14}} {{1:<6}} {{2:<{max_marks}}} {{3:<10}}"
 
     try:
         files_list = os.listdir(args.dirname)
