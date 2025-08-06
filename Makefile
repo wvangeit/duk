@@ -5,6 +5,7 @@ clean:
 	rm -rf build
 	rm -rf duk.egg-info
 	rm -rf wheelhouse
+	rm -rf duk/_version.py
 dist: clean .venv
 	uv build
 install_dist: dist

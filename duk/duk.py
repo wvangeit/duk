@@ -46,10 +46,13 @@ def print_normal_files(file_sizes, max_marks, total_size, fmt, args):
             nmarks = max_marks
             percentage = 100.0
         if not args.nogrouping:
-            file_size = "{:,}".format(file_size)
+            file_size = f"{file_size:,}"
         print(
             fmt.format(
-                file_size, "%02.2f" % percentage, "".join(["#"] * nmarks), filename
+                file_size,
+                f"{percentage:<02.2f}",
+                "".join(["#"] * nmarks),
+                filename,
             )
         )
 
@@ -70,7 +73,7 @@ def calculate_file_sizes(files_list, args):
             du_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE
         )
         stdout, stderr = duks_proc.communicate()
-        error = stderr.decode("utf-8").split("\n")[0]
+        error = stderr.decode("utf-8").split("\n", maxsplit=1)[0]
         if not args.noF:
             is_link = os.path.islink(full_filename)
             is_dir = os.path.isdir(full_filename)
@@ -79,7 +82,9 @@ def calculate_file_sizes(files_list, args):
             elif is_dir:
                 filename += "/"
         if error == "":
-            file_sizes[filename] = int(stdout.decode("utf-8").split("\t")[0])
+            file_sizes[filename] = int(
+                stdout.decode("utf-8").split("\t", maxsplit=1)[0]
+            )
         else:
             errors[filename] = error
         if not args.noprogress:
@@ -93,7 +98,7 @@ def calculate_file_sizes(files_list, args):
 def print_header(dirname, fmt, args):
     """Print header string"""
 
-    print('\n\nStatistics of directory "%s" :\n' % dirname)
+    print(f'\n\nStatistics of directory "{dirname}" :\n')
 
     if args.inodes:
         col0_name = "inodes"
@@ -107,12 +112,12 @@ def print_tail(total_size, permission_error, args):
     """Print tail string"""
 
     if not args.nogrouping:
-        total_size = "{:,}".format(total_size)
-    print("\nTotal directory size: %s kByte\n" % total_size)
+        total_size = f"{total_size:,}"
+    print(f"\nTotal directory size: {total_size} kByte\n")
 
     if permission_error:
         print(
-            "The Ducky has no permission to access certain " "subdirectories !\n",
+            "The Ducky has no permission to access certain subdirectories !\n",
             file=sys.stderr,
         )
 
@@ -121,7 +126,7 @@ def print_progress(progress, total_bar_size):
     """Print a progress bar"""
 
     bar_size = int(round(total_bar_size * progress))
-    pbar = "\r{0}".format(">" * bar_size + "-" * (total_bar_size - bar_size))
+    pbar = f"\r{'>' * bar_size}{'-' * (total_bar_size - bar_size)}"
     sys.stdout.write(pbar)
     sys.stdout.flush()
 
@@ -143,7 +148,6 @@ def parse_arguments():
     parser.add_argument("--inodes", action="store_true", default=False)
     parser.add_argument("--noF", action="store_true")
     return parser.parse_args()
-    parser.add_argument("--noprogress", action="store_true")
 
 
 def main():
@@ -151,13 +155,16 @@ def main():
 
     args = parse_arguments()
     max_marks = 20
-    fmt = f"{{0:<14}} {{1:<6}} {{2:<{max_marks}}} {{3:<10}}"
+    fmt = f"{{0:<14}} {{1:<6}} {{2:<{max_marks}}} {{3}}"
 
     try:
         files_list = os.listdir(args.dirname)
     except PermissionError:
-        print(f"Permission denied: Unable to access directory '{args.dirname}'", file=sys.stderr)
-    except Exception as e:
+        print(
+            f"Permission denied: Unable to access directory '{args.dirname}'",
+            file=sys.stderr,
+        )
+    except Exception as e:  # pylint: disable=broad-except
         print(f"Error accessing directory '{args.dirname}': {e}", file=sys.stderr)
     permission_error = False
 
@@ -178,7 +185,7 @@ if __name__ == "__main__":
         print("\nThe Duck was shot by the user !")
         warnings.filterwarnings("ignore")
         sys.exit(1)
-    except Exception as e:
+    except Exception as e:  # pylint: disable=broad-except
         print("Sorry, the Duck was eaten by the Python !\nReason:", sys.exc_info()[0])
         if isinstance(e, SystemExit):
             raise  # take the exit
