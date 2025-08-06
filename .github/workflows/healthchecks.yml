@@ -14,7 +14,7 @@ jobs:
     steps:
       - name: Keepalive Workflow
         env:
-          GITHUB_TOKEN: ${{ inputs.GITHUB_TOKEN || github.token }}
+          GITHUB_TOKEN: ${{ github.token }}
         shell: sh
         run: gh api -X PUT "repos/wvangeit/duk/actions/workflows/buildwheels.yml/enable"
   ping-success:
