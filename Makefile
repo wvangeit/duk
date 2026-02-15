@@ -17,7 +17,7 @@ push: clean test
 	git push
 	git push --tags
 .venv: .check-uv-installed
-	@uv venv $@
+	@uv venv --clear $@
 
 .check-uv-installed:
 	@echo "Checking if 'uv' is installed..."
